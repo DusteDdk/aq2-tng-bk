@@ -3,13 +3,10 @@
 # Tested platforms: Linux x86
 #
 
-GIT_REV=$(shell git rev-parse --short HEAD)
-ifeq ($(GIT_REV),)
-GIT_REV=git
-endif
+GIT_REV=-boonehack
 PACKAGE=aq2-tng
 REL_VERSION=2.81
-VERSION=$(REL_VERSION)~$(GIT_REV)
+VERSION=$(REL_VERSION)$(GIT_REV)
 
 # remember to update this for every release commit
 RELEASE=no
@@ -79,7 +76,7 @@ GAME_OBJS = \
 	g_turret.o g_utils.o g_weapon.o g_xmisc.o m_move.o \
 	p_client.o p_hud.o p_trail.o p_view.o p_weapon.o q_shared.o \
 	tng_stats.o tng_flashlight.o tng_irc.o tng_ini.o tng_balancer.o \
-	g_grapple.o
+	g_grapple.o boonehack.o
 
 game$(ARCH).$(SHLIBEXT) : $(GAME_OBJS)
 	$(DO_LINK)

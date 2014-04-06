@@ -1113,7 +1113,7 @@ void Cmd_Kill_f (edict_t * ent)
 				ent->client->resp.radio_gender ? "she" : "he");
 			PrintDeathMessage(deathmsg, ent);
 			if(team_round_going || !OnSameTeam(ent, ent->client->attacker)) {
-				Add_Frag (ent->client->attacker);
+				Add_Frag (ent->client->attacker,ent);
 				Subtract_Frag (ent);
 				ent->client->resp.deaths++;
 			}

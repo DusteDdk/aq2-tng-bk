@@ -288,6 +288,8 @@
 #include	"tng_ini.h"
 #include	"tng_balancer.h"
 #include	"g_grapple.h"
+#include	"boonehack.h"
+
 #define		getEnt(entnum)	(edict_t *)((char *)globals.edicts + (globals.edict_size * entnum))	//AQ:TNG Slicer - This was missing
 #define		GAMEVERSION			"action"	// the "gameversion" client command will print this plus compile date
 
@@ -536,7 +538,7 @@ gitem_t;
 // it should be initialized at dll load time, and read/written to
 // the server.ssv file for savegames
 //
-typedef struct
+typedef struct game_locals_s
 {
   char helpmessage1[512];
   char helpmessage2[512];
@@ -1340,6 +1342,7 @@ typedef struct
 }
 client_persistant_t;
 
+
 // client data that stays across deathmatch respawns
 typedef struct
 {
@@ -1348,6 +1351,7 @@ typedef struct
   int enterframe;		// level.framenum the client entered the game
 
   int score;			// frags, etc
+  
 
   vec3_t cmd_angles;		// angles sent over in the last command
 
@@ -1437,6 +1441,9 @@ typedef struct
   int stats_shots[100];       // Shots fired
   int stats_hits[100];                // Shots hit
   int stats_headshot[100];    // Shots in head
+
+  booneStats_t boone;
+
 
   //AQ2:TNG - Slicer: Video Checking and further Cheat cheking vars
   char vidref[16];
@@ -1910,7 +1917,7 @@ void SpawnDamage (int type, vec3_t origin, vec3_t normal, int damage);
 void Killed (edict_t * targ, edict_t * inflictor, edict_t * attacker,
 	     int damage, vec3_t point);
 
-void Add_Frag (edict_t * ent);
+void Add_Frag (edict_t * ent,edict_t * victim);
 void Subtract_Frag (edict_t * ent);
 
 void PrintDeathMessage(char *msg, edict_t * gibee);

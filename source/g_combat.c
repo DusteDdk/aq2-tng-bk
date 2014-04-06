@@ -876,7 +876,9 @@ T_Damage (edict_t * targ, edict_t * inflictor, edict_t * attacker, vec3_t dir,
 						{
 							if (use_rewards->value)
 							{
-								sprintf (buf, "ACCURACY %s!", attacker->client->pers.netname);
+								sprintf (buf, "%s -[ACCURACY]-> %s!", attacker->client->pers.netname, targ->client->pers.netname);
+								booneEvent(BOONE_ACCURACY, targ,attacker );
+
 								CenterPrintAll (buf);
 								gi.sound (&g_edicts[0], CHAN_VOICE | CHAN_NO_PHS_ADD,
 									gi.soundindex ("tng/accuracy.wav"), 1.0, ATTN_NONE, 0.0);

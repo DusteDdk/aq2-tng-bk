@@ -325,7 +325,7 @@ void ClientDisconnect(edict_t * ent);
 void SP_misc_teleporter_dest(edict_t * ent);
 void CopyToBodyQue(edict_t * ent);
 
-void Add_Frag(edict_t * ent)
+void Add_Frag(edict_t * ent, edict_t* victim)
 {
 	char buf[256];
 	int frags = 0;
@@ -344,14 +344,20 @@ void Add_Frag(edict_t * ent)
 			ent->client->resp.streak++;
 			if (ent->client->resp.streak % 5 == 0 && use_rewards->value)
 			{
-				sprintf(buf, "IMPRESSIVE %s!", ent->client->pers.netname);
+				sprintf(buf, "%s -[IMPRESSIVE]-> %s!", ent->client->pers.netname,victim->client->pers.netname);
+				booneEvent(BOONE_IMPRESSIVE, victim, ent );
+
+				
 				CenterPrintAll(buf);
 				gi.sound(&g_edicts[0], CHAN_VOICE | CHAN_NO_PHS_ADD,
 					 gi.soundindex("tng/impressive.wav"), 1.0, ATTN_NONE, 0.0);
 			}
 			else if (ent->client->resp.streak % 12 == 0 && use_rewards->value)
 			{
-				sprintf(buf, "EXCELLENT %s (%dx)!", ent->client->pers.netname,ent->client->resp.streak/12);
+				sprintf(buf, "%s -[EXCELLENT]-> %s (%dx)!", ent->client->pers.netname,victim->client->pers.netname,ent->client->resp.streak/12);
+				booneEvent(BOONE_EXCELLENT, victim, ent );
+
+				
 				CenterPrintAll(buf);
 				gi.sound(&g_edicts[0], CHAN_VOICE | CHAN_NO_PHS_ADD,
 					 gi.soundindex("tng/excellent.wav"), 1.0, ATTN_NONE, 0.0);
@@ -791,6 +797,9 @@ void ClientObituary(edict_t * self, edict_t * inflictor, edict_t * attacker)
 		// moved falling to the end
 		if (self->client->push_timeout)
 			special = 1;
+
+
+		booneEvent(BOONE_PLUM, self, NULL );
 		//message = "hit the ground hard, real hard";
 		if (IsNeutral(self))
 			message = "plummets to its death";
@@ -921,7 +930,7 @@ void ClientObituary(edict_t * self, edict_t * inflictor, edict_t * attacker)
 				if (!teamplay->value || !OnSameTeam(self, self->client->attacker))
 				{
 					self->client->resp.streak = 0;
-					Add_Frag(self->client->attacker);
+					Add_Frag(self->client->attacker,self );
 					self->client->resp.deaths++;
 				}
 			}
@@ -1329,7 +1338,7 @@ void ClientObituary(edict_t * self, edict_t * inflictor, edict_t * attacker)
 				}
 			} else {
 				if (!teamplay->value || mod != MOD_TELEFRAG) {
-					Add_Frag(attacker);
+					Add_Frag(attacker, self);
 					attacker->client->pers.num_kills++;
 					self->client->resp.streak = 0;
 					self->client->resp.deaths++;

@@ -986,7 +986,7 @@ void JoinTeam (edict_t * ent, int desired_team, int skip_menuclose)
 				PrintDeathMessage(deathmsg, ent);
 				IRC_printf (IRC_T_DEATH, deathmsg);
 				if(team_round_going || !OnSameTeam(ent, ent->client->attacker)) {
-					Add_Frag (ent->client->attacker);
+					Add_Frag (ent->client->attacker, ent);
 					Subtract_Frag (ent);
 					ent->client->resp.deaths++;
 				}
@@ -1079,7 +1079,7 @@ void LeaveTeam (edict_t * ent)
 				PrintDeathMessage(deathmsg, ent);
 				IRC_printf (IRC_T_DEATH, deathmsg);
 				if(team_round_going || !OnSameTeam(ent, ent->client->attacker)) {
-					Add_Frag (ent->client->attacker);
+					Add_Frag (ent->client->attacker, ent);
 					Subtract_Frag (ent);
 					ent->client->resp.deaths++;
 				}
@@ -1484,6 +1484,11 @@ void ResetScores (qboolean playerScores)
 		if (!ent->inuse)
 			continue;
 
+		//Boone begin
+		booneClear(ent);
+		//Boone end
+
+		
 		ent->client->resp.score = 0;
 		ent->client->resp.kills = 0;
 		ent->client->resp.damage_dealt = 0;
@@ -1982,6 +1987,7 @@ int WonGame (int winner)
 		{
 			gi.bprintf (PRINT_HIGH, "%s won!\n", TeamName(winner));
 			IRC_printf (IRC_T_GAME, "%n won!", TeamName(winner));
+
 			// AQ:TNG Igor[Rock] changing sound dir
 			if(use_warnings->value)
 				gi.sound (&g_edicts[0], CHAN_VOICE | CHAN_NO_PHS_ADD,	gi.soundindex (va("tng/team%i_wins.wav", winner)), 1.0, ATTN_NONE,	0.0);
@@ -2000,6 +2006,17 @@ int WonGame (int winner)
 		{
 			if (matchtime >= timelimit->value * 60)
 			{
+				if( winner != WINNER_TIE && winner != WINNER_NONE )
+				{
+					if( teams[TEAM1].score > teams[TEAM2].score )
+					{
+						booneTeamWin(TEAM1, &game);
+					} else if( teams[TEAM2].score > teams[TEAM1].score ) {
+						booneTeamWin(TEAM2, &game);
+					}
+				}
+
+
 				SendScores ();
 				teams[TEAM1].ready = teams[TEAM2].ready = teams[TEAM3].ready = 0;
 				team_round_going = team_round_countdown = team_game_going = matchtime = 0;
@@ -2009,6 +2026,17 @@ int WonGame (int winner)
 		}
 		else if (level.time >= timelimit->value * 60)
 		{
+
+			if( winner != WINNER_TIE && winner != WINNER_NONE )
+			{
+				if( teams[TEAM1].score > teams[TEAM2].score )
+				{
+					booneTeamWin(TEAM1, &game);
+				} else if( teams[TEAM2].score > teams[TEAM1].score ) {
+					booneTeamWin(TEAM2, &game);
+				}
+			}
+
 			gi.bprintf (PRINT_HIGH, "Timelimit hit.\n");
 			IRC_printf (IRC_T_GAME, "Timelimit hit.");
 			EndDMLevel ();
@@ -2246,6 +2274,13 @@ void CheckTeamRules (void)
 			{
 				if (matchtime >= timelimit->value * 60)
 				{
+
+					if( teams[TEAM1].score > teams[TEAM2].score )
+					{
+						booneTeamWin(TEAM1, &game);
+					} else if( teams[TEAM2].score > teams[TEAM1].score ) {
+						booneTeamWin(TEAM2, &game);
+					}
 					SendScores ();
 					teams[TEAM1].ready = teams[TEAM2].ready = teams[TEAM3].ready = 0;
 					team_round_going = team_round_countdown = team_game_going = matchtime = 0;
@@ -2256,6 +2291,14 @@ void CheckTeamRules (void)
 			//AQ2:TNG END
 			else if (level.time >= timelimit->value * 60)
 			{
+
+				if( teams[TEAM1].score > teams[TEAM2].score )
+				{
+					booneTeamWin(TEAM1, &game);
+				} else if( teams[TEAM2].score > teams[TEAM1].score ) {
+					booneTeamWin(TEAM2, &game);
+				}
+
 				gi.bprintf (PRINT_HIGH, "Timelimit hit.\n");
 				IRC_printf (IRC_T_GAME, "Timelimit hit.");
 				if (ctf->value)
@@ -2927,33 +2970,33 @@ void A_ScoreboardMessage (edict_t * ent, edict_t * killer)
 		// AQ2:TNG Deathwatch - Nice little bar
 		{
 			strcpy (string,
-			"xv 0 yv 32 string2 \"Player          Time Ping\" "
-			"xv 0 yv 40 string2 \"žžžžžžžžžžžžžŸ žžŸ žžŸ\" ");
+			"xv -100 yv 32 string2 \"Player          Time Ping\" "
+			"xv -100 yv 40 string2 \"žžžžžžžžžžžžžŸ žžŸ žžŸ\" ");
 		}
 		else if (teamdm->value)
 		{
 			if(matchmode->value) {
 				strcpy(string,
-					   "xv 0 yv 32 string2 \"Frags Player          Time Ping Deaths Team\" "
-					   "xv 0 yv 40 string2 \"žžžŸ žžžžžžžžžžžžžŸ žžŸ žžŸ žžžžŸ žžŸ\" ");
+					   "xv -100 yv 32 string2 \"Frags Player          Time Ping Deaths Team booneGive booneTake\" "
+					   "xv -100 yv 40 string2 \"žžžŸ žžžžžžžžžžžžžŸ žžŸ žžŸ žžžžŸ žžŸ žžžžžžžŸ žžžžžžžŸ\" ");
 			} else {
 				strcpy(string,
-					   "xv 0 yv 32 string2 \"Frags Player          Time Ping Deaths Kills\" "
-					   "xv 0 yv 40 string2 \"žžžŸ žžžžžžžžžžžžžŸ žžŸ žžŸ žžžžŸ žžžŸ\" ");
+					   "xv -100 yv 32 string2 \"Frags Player          Time Ping Deaths Kills  booneGive booneTake\" "
+					   "xv -100 yv 40 string2 \"žžžŸ žžžžžžžžžžžžžŸ žžŸ žžŸ žžžžŸ žžžŸ  žžžžžžžŸ žžžžžžžŸ\" ");
 			}
 		}
 		else if (matchmode->value)
 		{
 			strcpy (string,
-			"xv 0 yv 32 string2 \"Frags Player          Time Ping Damage Team \" "
-			"xv 0 yv 40 string2 \"žžžŸ žžžžžžžžžžžžžŸ žžŸ žžŸ žžžžŸ žžŸ\" ");
+			"xv -100 yv 32 string2 \"Frags Player          Time Ping Damage Team booneGive booneTake\" "
+			"xv -100 yv 40 string2 \"žžžŸ žžžžžžžžžžžžžŸ žžŸ žžŸ žžžžŸ žžŸ žžžžžžžŸ žžžžžžžŸ\" ");
 
 		}
 		else
 		{
 			strcpy (string,
-			"xv 0 yv 32 string2 \"Frags Player          Time Ping Damage Kills\" "
-			"xv 0 yv 40 string2 \"žžžŸ žžžžžžžžžžžžžŸ žžŸ žžŸ žžžžŸ žžžŸ\" ");
+			"xv -100 yv 32 string2 \"Frags Player          Time Ping Damage Kills booneGive booneTake\" "
+			"xv -100 yv 40 string2 \"žžžŸ žžžžžžžžžžžžžŸ žžŸ žžŸ žžžžŸ žžžŸ žžžžžžžŸ žžžžžžžŸ\" ");
 		}
       /*
          {
@@ -2976,7 +3019,7 @@ void A_ScoreboardMessage (edict_t * ent, edict_t * killer)
 
 			if (noscore->value)
 			{
-				sprintf(string + strlen(string), "xv 0 yv %d string \"%-15s %4d %4d\" ",
+				sprintf(string + strlen(string), "xv -100 yv %d string \"%-15s %4d %4d\" ",
 					48 + i * 8,	game.clients[sorted[i]].pers.netname,
 					(level.framenum - game.clients[sorted[i]].resp.enterframe) / 600,
 					ping);
@@ -2996,7 +3039,7 @@ void A_ScoreboardMessage (edict_t * ent, edict_t * killer)
 				}
 
 
-				sprintf(string + strlen(string), "xv 0 yv %d string \"%5d %-15s %4d %4d %6s",
+				sprintf(string + strlen(string), "xv -100 yv %d string \"%5d %-15s %4d %4d %6s",
 					48 + i * 8,	game.clients[sorted[i]].resp.score,
 					game.clients[sorted[i]].pers.netname,
 					(level.framenum - game.clients[sorted[i]].resp.enterframe) / 600,
@@ -3004,21 +3047,25 @@ void A_ScoreboardMessage (edict_t * ent, edict_t * killer)
 
 				if(matchmode->value)
 				{
-					sprintf (string + strlen(string), " %i%s%s \" ",
+					sprintf (string + strlen(string), " %i%s%s",
 						game.clients[sorted[i]].resp.team,
 						game.clients[sorted[i]].resp.captain == 0 ? "" : "C",
 						game.clients[sorted[i]].resp.subteam == 0 ? "" : "S");
 				}
 				else
 				{
-					sprintf(string + strlen(string), " %5i\" ",
+					sprintf(string + strlen(string), " %5i",
 						game.clients[sorted[i]].resp.kills);
 				}
+				
+				//Add boone
+				sprintf(string + strlen(string), " %9i %9i\" ",
+						game.clients[sorted[i]].resp.boone.stat[BOONE_GIVE], game.clients[sorted[i]].resp.boone.stat[BOONE_TAKE] );
 			}
 
 			if (strlen(string) > (maxsize - 100) && i < (total - 2))
 			{
-				sprintf (string + strlen (string), "xv 0 yv %d string \"..and %d more\" ",
+				sprintf (string + strlen (string), "xv -100 yv %d string \"..and %d more\" ",
 					48 + (i + 1) * 8, (total - i - 1));
 				break;
 			}

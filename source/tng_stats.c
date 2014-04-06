@@ -251,6 +251,45 @@ void Cmd_Stats_f (edict_t *targetent, char *arg)
 
 	gi.cprintf (targetent, PRINT_HIGH, "Average Accuracy:                        %.2f\n", perc_hit); // Average
 	gi.cprintf (targetent, PRINT_HIGH, "\nŸ\n\n");
+	
+	//Boone start
+	gi.cprintf (targetent, PRINT_HIGH, "booneKamp stats\n" );
+	gi.cprintf (targetent, PRINT_HIGH, "Ÿ\n");
+	gi.cprintf (targetent, PRINT_HIGH, "  Accuracy   : %i\n",ent->client->resp.boone.stat[BOONE_ACCURACY] );
+	gi.cprintf (targetent, PRINT_HIGH, "  Impressive : %i\n",ent->client->resp.boone.stat[BOONE_IMPRESSIVE] );
+	gi.cprintf (targetent, PRINT_HIGH, "  Excellent  : %i\n",ent->client->resp.boone.stat[BOONE_EXCELLENT] );
+	gi.cprintf (targetent, PRINT_HIGH, "  Plums      : %i\n",ent->client->resp.boone.stat[BOONE_PLUM] );
+	gi.cprintf (targetent, PRINT_HIGH, "  booneTake  : %i\n",ent->client->resp.boone.stat[BOONE_TAKE] );
+	gi.cprintf (targetent, PRINT_HIGH, "  booneGive  : %i\n\n",ent->client->resp.boone.stat[BOONE_GIVE] );
+
+
+	booneBuddy_t* it = ent->client->resp.boone.buddies;
+	if( !it )
+	{
+		gi.cprintf (targetent, PRINT_HIGH, "Nothing else to report.\n" );
+	} else {
+
+
+		gi.cprintf (targetent, PRINT_HIGH, "  booneBuddy       imp  acc  exl   boone\n" );
+		gi.cprintf (targetent, PRINT_HIGH, "  Ÿ  Ÿ  Ÿ  Ÿ   Ÿ\n");
+
+		while( (it=it->next) )
+		{
+			//char spacer[16];
+			//memcpy(&spacer, ' ', 16);
+		//	spacer[ strlen(it->name-16) ] = 0;
+			gi.cprintf (targetent, PRINT_HIGH, "  %-15s  %i/%i  %i/%i  %i/%i     %i\n",it->name,
+					it->taken[BOONE_IMPRESSIVE], it->given[BOONE_IMPRESSIVE],
+					it->taken[BOONE_ACCURACY], it->given[BOONE_ACCURACY],
+					it->taken[BOONE_EXCELLENT], it->given[BOONE_EXCELLENT], (it->boone));
+		}
+	}
+
+	gi.cprintf (targetent, PRINT_HIGH, "\nŸ\n\n");
+
+
+	//Boone end
+	
 
 }
 

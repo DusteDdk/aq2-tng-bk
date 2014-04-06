@@ -1,0 +1,49 @@
+#ifndef BOONEHACK_INCLUDED
+#define BOONEHACK_INCLUDED
+
+#define BOONE_IMPRESSIVE	0
+#define BOONE_ACCURACY		1
+#define BOONE_EXCELLENT		2
+#define BOONE_PLUM			3
+#define BOONE_GIVE			4
+#define BOONE_TAKE			5
+
+#define BOONE_OUT			-1
+#define BOONE_IN			1
+static const int boonePrice[4] = { 1, 2, 3, 1 };
+
+
+typedef struct booneBuddy_s
+{
+	char name[16];
+	int boone;
+	int given[3], taken[3];
+	struct booneBuddy_s* next;
+} booneBuddy_t;
+
+typedef struct 
+{
+	int stat[6];
+	booneBuddy_t* buddies;
+} booneStats_t;
+
+struct game_locals_s;
+void booneTeamWin(int winner, struct game_locals_s* game);
+void booneEvent(int eventType, edict_t* victim, edict_t* attacker );
+void booneClear(edict_t* ent);
+char* booneEventName(int i);
+
+
+//Imp = 1 Acc = 2 Exe = 3 Plum = 1
+//On looser team +
+
+/*
+{ "booneEvent": "plum", "victim":"glen" }
+{ "booneEvent": "acc", "victim": "JC", "attacker":"Jimmi" }
+{ "booneEvent": "imp", "victim": "glen", "attacker":"Mads" }
+{ "booneEvent": "exl", "victim": "Per", "attacker":"Lasse" }
+{ "booneEvent": "Win", "winner": "Team 1", "looser": "Team 2" }
+{ "booneEvent": "Tie" }
+
+*/
+#endif

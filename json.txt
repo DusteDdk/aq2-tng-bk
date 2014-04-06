@@ -1,0 +1,10 @@
+Example output, one event per line, one valid json message.
+{ "booneEvent":"plu", "klutz":"hund" }
+{ "booneEvent":"imp", "victim":"JC", "attacker":"hund" }
+{ "booneEvent":"imp", "victim":"JC", "attacker":"hund" }
+{ "booneEvent":"exc", "victim":"JC", "attacker":"hund" }
+{ "booneEvent":"acc", "victim":"JC", "attacker":"hund" }
+{ "booneEvent":"acc", "victim":"hund", "attacker":"JC" }
+{ "booneEvent":"acc", "victim":"hund", "attacker":"JC" }
+{ "booneEvent":"imp", "victim":"hund", "attacker":"JC" }
+{ "booneEvent":"teamWin", "Team":2 }
