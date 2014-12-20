@@ -387,6 +387,10 @@ cvar_t *day_cycle;		// If darkmatch is on, this value is the nr of seconds betwe
 cvar_t *hearall;		// used for matchmode
 cvar_t *deadtalk;
 
+// Boonehack shells, set shellstay 0 to disable.
+cvar_t *sv_shellnum;	//How many shells at rest allowed in world?
+cvar_t *sv_shellstay;	//How many seconds should a shell stay (if world has room for it)
+
 cvar_t *mm_forceteamtalk;
 cvar_t *mm_adminpwd;
 cvar_t *mm_allowlock;

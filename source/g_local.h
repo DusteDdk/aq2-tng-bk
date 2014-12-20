@@ -970,6 +970,11 @@ extern cvar_t *sv_shelloff;
 extern cvar_t *splatlimit;
 extern cvar_t *bholelimit;
 
+// Boonehack shells, set shellstay 0 to disable.
+extern cvar_t *sv_shellnum;	//How many shells at rest allowed in world?
+extern cvar_t *sv_shellstay;	//How long (ms) should a shell stay (if world has room for it)
+
+
 #define world   (&g_edicts[0])
 
 // item spawnflags

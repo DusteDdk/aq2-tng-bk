@@ -644,6 +644,10 @@ void InitGame (void)
 	day_cycle = gi.cvar ("day_cycle", "10", 0);	// Darkmatch cycle time.
 	use_classic = gi.cvar ("use_classic", "0", CVAR_SERVERINFO);	// Reset Spread and Grenade Strength to 1.52
 
+	// Boonehack shells, set shellstay 0 to disable.
+	sv_shellnum = gi.cvar ("shellnum", "16", 0);	//How many shells at rest allowed in world?
+	sv_shellstay = gi.cvar ("shellstay", "8", 0);	//How many seconds should a shell stay (if world has room for it)
+
 	CGF_SFX_InstallGlassSupport ();	// william for CGF (glass fx)
 
 	g_select_empty = gi.cvar ("g_select_empty", "0", CVAR_ARCHIVE);

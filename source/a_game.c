@@ -604,9 +604,16 @@ void EjectBlooder(edict_t * self, vec3_t start, vec3_t veloc)
 
 // zucc - Adding EjectShell code from action quake, modified for Axshun.
 /********* SHELL EJECTION **************/
+void shellThink(edict_t * self);
 
 void ShellTouch(edict_t * self, edict_t * other, cplane_t * plane, csurface_t * surf)
 {
+	if( other->solid != SOLID_BSP )
+	{
+	  self->health=0;
+	  shellThink(self);
+	}
+
 	if (self->owner->client->curr_weap == M3_NUM)
 		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/shellhit1.wav"), 1, ATTN_STATIC, 0);
 	else if (random() < 0.5)
@@ -615,10 +622,23 @@ void ShellTouch(edict_t * self, edict_t * other, cplane_t * plane, csurface_t * 
 		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/tink2.wav"), 0.2, ATTN_STATIC, 0);
 }
 
-void ShellDie(edict_t * self)
+void shellThink(edict_t * self)
 {
-	G_FreeEdict(self);
-	--shells;
+	//We want to be solid to play sounds, we turn nonsolid when at rest so we can lay around without being killed by the player walking over us.
+	if( self->solid == SOLID_BBOX && VectorLength(self->velocity) == 0 )
+	{
+		self->solid=SOLID_NOT;
+	}
+
+	if( self->health > 1 && shells < sv_shellnum->value )
+	{
+	  self->health--;
+	  self->nextthink=level.time + 1;
+	} else
+	{
+	      G_FreeEdict(self);
+	      --shells;
+	}
 }
 
 // zucc fixed this so it works with the sniper rifle and checks handedness
@@ -834,8 +854,10 @@ void EjectShell(edict_t * self, vec3_t start, int toggle)
 
 	shell->owner = self;
 	shell->touch = ShellTouch;
-	shell->nextthink = level.time + 1.2 - (shells * .05);
-	shell->think = ShellDie;
+	shell->nextthink = level.time + 1;
+	shell->think = shellThink;
+	shell->health = sv_shellstay->value;
+
 	shell->classname = "shell";
 
 	gi.linkentity(shell);
