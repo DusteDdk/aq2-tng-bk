@@ -604,23 +604,23 @@ void EjectBlooder(edict_t * self, vec3_t start, vec3_t veloc)
 
 // zucc - Adding EjectShell code from action quake, modified for Axshun.
 /********* SHELL EJECTION **************/
-void shellThink(edict_t * self);
 
 void ShellTouch(edict_t * self, edict_t * other, cplane_t * plane, csurface_t * surf)
 {
-	if( other->solid != SOLID_BSP )
-	{
-	  self->health=0;
-	  shellThink(self);
-	}
+        if( other->solid != SOLID_BSP )
+        {
+          self->health=0;
+          self->solid = SOLID_NOT;
+        }
 
-	if (self->owner->client->curr_weap == M3_NUM)
-		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/shellhit1.wav"), 1, ATTN_STATIC, 0);
-	else if (random() < 0.5)
-		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/tink1.wav"), 0.2, ATTN_STATIC, 0);
-	else
-		gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/tink2.wav"), 0.2, ATTN_STATIC, 0);
+        if (self->owner->client->curr_weap == M3_NUM)
+                gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/shellhit1.wav"), 1, ATTN_STATIC, 0);
+        else if (random() < 0.5)
+                gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/tink1.wav"), 0.2, ATTN_STATIC, 0);
+        else
+                gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/tink2.wav"), 0.2, ATTN_STATIC, 0);
 }
+
 
 void shellThink(edict_t * self)
 {
