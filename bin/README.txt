@@ -7,7 +7,7 @@ The .dll file (gamex64.dll) is for 32 bit windows.
 shellnum (default "16")
 
 //How many seconds should a shell stay (if world has room for it)
-hellstay (default "8")
+shellstay (default "8")
 
 //How large a streak to obtain impressive
 impstreak (default "5")
