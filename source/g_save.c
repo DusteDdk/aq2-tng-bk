@@ -647,6 +647,8 @@ void InitGame (void)
 	// Boonehack shells, set shellstay 0 to disable.
 	sv_shellnum = gi.cvar ("shellnum", "16", 0);	//How many shells at rest allowed in world?
 	sv_shellstay = gi.cvar ("shellstay", "8", 0);	//How many seconds should a shell stay (if world has room for it)
+	sv_impstreak = gi.cvar ("impstreak", "5", 0);   //How large a streak to obtain impressive
+        sv_excstreak = gi.cvar ("excstreak", "12", 0);   //How large a streak to obtain excellent
 
 	CGF_SFX_InstallGlassSupport ();	// william for CGF (glass fx)
 

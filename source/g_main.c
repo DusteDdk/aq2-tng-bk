@@ -390,6 +390,8 @@ cvar_t *deadtalk;
 // Boonehack shells, set shellstay 0 to disable.
 cvar_t *sv_shellnum;	//How many shells at rest allowed in world?
 cvar_t *sv_shellstay;	//How many seconds should a shell stay (if world has room for it)
+cvar_t *sv_impstreak;   //How large a streak to obtain impressive
+cvar_t *sv_excstreak;   //How large a streak to obtain excellent
 
 cvar_t *mm_forceteamtalk;
 cvar_t *mm_adminpwd;

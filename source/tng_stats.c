@@ -413,8 +413,8 @@ void A_ScoreboardEndLevel (edict_t * ent, edict_t * killer)
       total++;
     }
   sprintf (string + strlen (string),
-	   "xv 0 yv 40 string2 \"Frags Player          Shots   Acc   FPM \" "
-	   "xv 0 yv 48 string2 \"Ÿ Ÿ Ÿ Ÿ Ÿ\" ");
+	   "xv 0 yv 40 string2 \"Frags Player          Shots   Acc   FPM booneGive booneTake\" "
+	   "xv 0 yv 48 string2 \"Ÿ Ÿ Ÿ Ÿ Ÿ Ÿ Ÿ\" ");
 
 //        strcpy (string, "xv 0 yv 32 string2 \"Frags Player          Time Ping Damage Kills\" "
 //                "xv 0 yv 40 string2 \"Ÿ Ÿ Ÿ Ÿ Ÿ Ÿ\" ");
@@ -430,6 +430,8 @@ void A_ScoreboardEndLevel (edict_t * ent, edict_t * killer)
      }
    */
   // AQ2:TNG END
+
+  gi.cprintf( ent,PRINT_HIGH, "======= BooneDump =======\n" );
 
   for (i = 0; i < total; i++)
     {
@@ -457,11 +459,14 @@ void A_ScoreboardEndLevel (edict_t * ent, edict_t * killer)
       else
 	strcpy (damage, "******");
       sprintf (string + strlen (string),
-	       "xv 0 yv %d string \"%5d %-15s  %4d %5.1f  %4.1f\" ",
+	       "xv 0 yv %d string \"%5d %-15s  %4d %5.1f  %4.1f %9i %9i\" ",
 	       56 + i * 8,
 	       sortedscores[i],
-	       game.clients[sorted[i]].pers.netname, shots, accuracy, fpm);
+	       game.clients[sorted[i]].pers.netname, shots, accuracy, fpm, game.clients[sorted[i]].resp.boone.stat[BOONE_GIVE], game.clients[sorted[i]].resp.boone.stat[BOONE_TAKE] );
 
+    
+        gi.cprintf( ent,PRINT_HIGH, "Player: %s booneGive: %2i  booneTake: %2i\n", game.clients[sorted[i]].pers.netname, game.clients[sorted[i]].resp.boone.stat[BOONE_GIVE], game.clients[sorted[i]].resp.boone.stat[BOONE_TAKE] );
+    
       if (strlen (string) > (maxsize - 100) && i < (total - 2))
 	{
 	  sprintf (string + strlen (string),
@@ -470,6 +475,7 @@ void A_ScoreboardEndLevel (edict_t * ent, edict_t * killer)
 	  break;
 	}
     }
+  gi.cprintf( ent,PRINT_HIGH, "======= ========= =======\n" );
 
 
 	if (strlen (string) > 1023)	// for debugging...

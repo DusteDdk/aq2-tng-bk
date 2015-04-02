@@ -341,8 +341,9 @@ void Add_Frag(edict_t * ent, edict_t* victim)
 
 		if (ent->solid != SOLID_NOT && ent->deadflag != DEAD_DEAD)
 		{
+
 			ent->client->resp.streak++;
-			if (ent->client->resp.streak % 5 == 0 && use_rewards->value)
+			if ( (ent->client->resp.streak) % ((int)sv_impstreak->value) == 0 && use_rewards->value)
 			{
 				sprintf(buf, "%s -[IMPRESSIVE]-> %s!", ent->client->pers.netname,victim->client->pers.netname);
 				booneEvent(BOONE_IMPRESSIVE, victim, ent );
@@ -352,7 +353,7 @@ void Add_Frag(edict_t * ent, edict_t* victim)
 				gi.sound(&g_edicts[0], CHAN_VOICE | CHAN_NO_PHS_ADD,
 					 gi.soundindex("tng/impressive.wav"), 1.0, ATTN_NONE, 0.0);
 			}
-			else if (ent->client->resp.streak % 12 == 0 && use_rewards->value)
+			else if ( (ent->client->resp.streak) % ((int)sv_excstreak->value) == 0 && use_rewards->value)
 			{
 				sprintf(buf, "%s -[EXCELLENT]-> %s (%dx)!", ent->client->pers.netname,victim->client->pers.netname,ent->client->resp.streak/12);
 				booneEvent(BOONE_EXCELLENT, victim, ent );
@@ -782,7 +783,7 @@ void ClientObituary(edict_t * self, edict_t * inflictor, edict_t * attacker)
 
 	ff = meansOfDeath & MOD_FRIENDLY_FIRE;
 	mod = meansOfDeath & ~MOD_FRIENDLY_FIRE;
-	loc = locOfDeath;	// useful for location based hits
+	loc = locOfDeath; // useful for location based hits
 	message = NULL;
 	message2 = "";
 
@@ -798,8 +799,11 @@ void ClientObituary(edict_t * self, edict_t * inflictor, edict_t * attacker)
 		if (self->client->push_timeout)
 			special = 1;
 
+                if(!special && team_round_going )
+                {
+                    booneEvent(BOONE_PLUM, self, NULL );
+                }
 
-		booneEvent(BOONE_PLUM, self, NULL );
 		//message = "hit the ground hard, real hard";
 		if (IsNeutral(self))
 			message = "plummets to its death";
