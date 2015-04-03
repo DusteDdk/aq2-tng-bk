@@ -3,7 +3,8 @@
 # Tested platforms: Linux x86
 #
 
-GIT_REV=-boonehack
+GIT_REV=-booneHack_$(shell git rev-parse --short HEAD)
+
 PACKAGE=aq2-tng
 REL_VERSION=2.81
 VERSION=$(REL_VERSION)$(GIT_REV)

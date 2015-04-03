@@ -1849,6 +1849,7 @@ void StartLCA ()
 			gi.soundindex ("atl/lights.wav"), 1.0, ATTN_NONE, 0.0);
 		lights_camera_action = 43;	// TempFile changed from 41
 	}
+
 	SpawnPlayers ();
 }
 

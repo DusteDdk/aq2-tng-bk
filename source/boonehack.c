@@ -7,6 +7,8 @@
 
 edict_t *g_edicts;
 
+static FILE* b_logfp[2] = { NULL, NULL };
+
 void booneTeamWin(int winner, struct game_locals_s* game, int teamAscore, int teamBscore)
 {
 	int loserteam = (winner==1)?2:1;
@@ -68,7 +70,7 @@ void booneTeamWin(int winner, struct game_locals_s* game, int teamAscore, int te
 	       cl_ent->client->pers.netname,score, shots, accuracy,
               cl_ent->client->resp.boone.stat[BOONE_ACCURACY],cl_ent->client->resp.boone.stat[BOONE_IMPRESSIVE], cl_ent->client->resp.boone.stat[BOONE_EXCELLENT], cl_ent->client->resp.boone.stat[BOONE_PLUM],
               cl_ent->client->resp.boone.stat[BOONE_GIVE], cl_ent->client->resp.boone.stat[BOONE_TAKE] );
-      booneWrite(BOONE_HTML, buf);
+                    booneWrite(BOONE_HTML, buf);
 
                 }
             }
@@ -111,7 +113,19 @@ void booneTeamWin(int winner, struct game_locals_s* game, int teamAscore, int te
     
             
             
-            booneWrite(BOONE_HTML, "<br><hr><br><br>");
+            booneWrite(BOONE_HTML, "<br><hr><br>\n");
+
+            if( b_logfp[BOONE_JSON] )
+            {
+                fclose(  b_logfp[BOONE_JSON] );
+                b_logfp[BOONE_JSON]=0;
+            }
+
+            if( b_logfp[BOONE_HTML] )
+            {
+                fclose(  b_logfp[BOONE_HTML] );
+                b_logfp[BOONE_HTML]=0;
+            }
             
     }
 
@@ -255,9 +269,9 @@ void booneBeginRound()
         //Log it
     char buf[1024];
     char timeStr[64]="\0";
-    
+
     booneTime(timeStr);
-    
+
     sprintf(buf, "{ \"booneEvent\":\"newroud\", \"time\":\"%s\" }", timeStr );
     booneWrite(BOONE_JSON, buf );
     
@@ -265,7 +279,7 @@ void booneBeginRound()
     booneWrite(BOONE_HTML, buf );
 }
 
-static FILE* b_logfp[2] = { NULL, NULL };
+
 
 
 void booneWrite( int log, char* str )
