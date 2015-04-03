@@ -250,10 +250,13 @@ void booneUpdate( edict_t* self, edict_t* other, int eventType, int direction )
 
 }
 
+
+
 void booneEvent(int eventType, edict_t* victim, edict_t* attacker )
 {
-
         char buf[1024];
+
+        booneSrvStart();
         
         if( BOONE_LOG )
         {
@@ -296,6 +299,7 @@ void booneEvent(int eventType, edict_t* victim, edict_t* attacker )
 
 void booneClear(edict_t* ent)
 {
+    
 	memset( &ent->client->resp.boone, 0, sizeof(booneStats_t) );
 }
 
@@ -338,3 +342,159 @@ void booneWrite( int log, char* str )
         printf("BOONE_DEBUG: fopen for %s (log %i) failed.\n", cv->string, log);
     }
 }
+
+
+// The "webserver" - Listen to a port, on incoming connection, ignre request, stream all data from file and close connection.
+// TODO: Set header refresh time to 2 seconds after match end?
+
+#ifdef WIN32
+#include <io.h>
+#include <winsock2.h>
+#define bzero(a,b)		memset(a,0,b)
+#else
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/time.h>
+#include <pthread.h>
+#endif
+#include <errno.h>
+#include <string.h>
+#include <fcntl.h>
+#include <stdarg.h>
+
+
+
+
+
+
+static int booneSrvRunning=0;
+static void booneSrvStart()
+{
+if(!booneSrvRunning)
+{
+    if( !booneSrvRunning )
+    {
+#ifdef WIN32
+ DWORD tid;
+        booneSrvRunning=1;
+        printf("Starting booneserver on port 8080.\n");
+      CloseHandle (CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE) booneSrvThread,
+				 NULL, 0, &tid));   
+#else
+        printf("booneserver not supported for unix yet.\n");
+#endif
+    }
+}
+}
+
+#ifdef WIN32
+static int
+booneSrvThread(void *unused)
+{
+  int sok, read_sok, len, flen;
+  char *p;
+  char buf[512];
+  char outbuf[512];
+  char timeStr[64];
+  struct sockaddr_in addr;
+
+  sok = socket (AF_INET, SOCK_STREAM, 0);
+  if (sok == INVALID_SOCKET)
+  {
+      printf("BOONE_WEB_DEBUG: Invalid socket\n");
+    return 0;
+  }
+
+  len = 1;
+  setsockopt (sok, SOL_SOCKET, SO_REUSEADDR, (char *) &len, sizeof (len));
+
+  memset (&addr, 0, sizeof (addr));
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons (8080);
+
+  if (bind (sok, (struct sockaddr *) &addr, sizeof (addr)) == SOCKET_ERROR)
+    {
+      printf("BOONE_WEB_DEBUG: Socket Bind Error\n");
+      closesocket (sok);
+      return 0;
+    }
+
+  if (listen (sok, 1) == SOCKET_ERROR)
+    {
+      printf("BOONE_WEB_DEBUG: Socket Listen Error\n");
+      closesocket (sok);
+      return 0;
+    }
+
+  len = sizeof (addr);
+  
+  while( 1 )
+  {
+    read_sok = accept (sok, (struct sockaddr *) &addr, &len);
+    
+    if (read_sok == INVALID_SOCKET)
+    {
+        printf("BOONE_WEB_DEBUG: Socket Accept Error\n");
+        return 0;
+    }
+
+    printf("BOONE_WEB_DEBUG: Servicing request from %s\n", inet_ntoa (addr.sin_addr));
+    
+            
+    recv (read_sok, buf, sizeof (buf) - 1, 0);
+    buf[sizeof (buf) - 1] = 0;        /* ensure null termination */
+    
+    printf("BOONE_WEB_DEBUG: recv: '%s'\n", buf);
+
+    if( sv_boonehtml->string[0] )
+    {
+        FILE* fp;
+        if( fp= fopen( sv_boonehtml->string, "rb" ) )
+        {
+            booneTime(timeStr);
+            fseek(fp, 0, SEEK_END);
+            flen = ftell(fp);
+            
+            char* data = malloc( flen+1 );
+            data[flen]=0;
+            
+            sprintf(outbuf, "HTTP/1.1 200 OK\r\nServer: BooneHack\r\ncache-control: private, max-age=1, no-cache\r\nPragma: no-cache\r\nContent-Type: text/html; charset=ISO-8859-1\r\n\r\n");
+            send(read_sok, outbuf, strlen(outbuf), 0);
+
+            sprintf(outbuf, "<html><head><title>aq2tng-booneHack by DST - %s</title></head><body><h2>AQ2:TNG-booneHack Stats</h2>\n", timeStr);
+            send(read_sok, outbuf, strlen(outbuf), 0);
+            
+            rewind(fp);
+            int rs=fread(data, 1, flen, fp);
+            if( rs != flen )
+            {
+                printf("Boonedebug: expected to read %i, but read %i (strlen=%i)\n", flen,rs,strlen(data) );
+            }
+            send(read_sok, data, rs, 0);
+            
+            free(data);
+
+            sprintf(outbuf, "</body></html>");
+            send(read_sok, outbuf, strlen(outbuf), 0);
+
+            fclose(fp);
+        } else {
+            sprintf(outbuf, "Could not open '%s' for reading, maybe there are no stats recorded yet.",sv_boonehtml->string );
+            send(read_sok, outbuf, strlen (outbuf), 0);
+        }
+    } else {
+        sprintf(outbuf, "boonehtml is disabled, ask the server admin to set boonehtml to a filename." );;        
+        send(read_sok, outbuf, strlen (outbuf), 0);
+    }
+
+    //sleep (1);
+    closesocket (read_sok);
+//    
+  }
+}
+
+#endif

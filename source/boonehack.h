@@ -43,8 +43,10 @@ char* booneEventName(int i);
 void booneWrite( int log, char* str );
 void booneTime( char* ltm );
 
+#ifdef WIN32
+static int booneSrvThread(void *unused);
+#endif
 
-//Imp = 1 Acc = 2 Exe = 3 Plum = 1
-//On looser team +1
+static void booneSrvStart();
 
 #endif
