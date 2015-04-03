@@ -270,6 +270,7 @@
 
 #include <time.h>
 #include "g_local.h"
+#include "boonehack.h"
 
 game_locals_t game;
 level_locals_t level;
@@ -481,6 +482,7 @@ void ShutdownGame (void)
 	IRC_printf (IRC_T_SERVER, "==== ShutdownGame ====");
 	IRC_exit ();
 	//PG BUND
+        booneShutdown();
 	vExitGame ();
 	gi.FreeTags (TAG_LEVEL);
 	gi.FreeTags (TAG_GAME);

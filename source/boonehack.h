@@ -42,11 +42,11 @@ void booneClear(edict_t* ent);
 char* booneEventName(int i);
 void booneWrite( int log, char* str );
 void booneTime( char* ltm );
-
+void booneShutdown();
 #ifdef WIN32
 static int booneSrvThread(void *unused);
 #endif
 
-static void booneSrvStart();
+void booneSrvStart();
 
 #endif

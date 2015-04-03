@@ -16,14 +16,12 @@ impstreak (default "5")
 excstreak (default "12")
 
 //If set, logs end-of-round stats in html format to given file.
-//default empty = not logging. Examples: set boonehtml "C:\www\boone.html" --- set boonehtml "mylog.html" --- set boonehtml "/home/dusted/log.html"
+//Examples: set boonehtml "C:\www\boone.html" --- set boonehtml "mylog.html" --- set boonehtml "/home/dusted/log.html"
 boonehtml (default empty = no loggin)
 
-//If boonehtml is set, and you set booneport to for example 8080, it will start a webserver on that port
-//The webserver will not start until a bone-event occurs (like a plum, imp, exl or acc).
-//Windows only, for now at least, may crash ? turn it off it it does.
+//If boonehtml is set, and you set booneport to for example 8080, it will start a webserver on that port.
+//Windows only, for now at least.
 booneport (default 0 = don't start webserver. example: set boonehtml "c:\aq2\boone.html"; set booneport 8080)
-
 
 //If set, logs boone events to given file in json format (one json entry per line)
 boonejson (default empty = not logging. Example: set boonejson "/home/dusted/boone.json")

@@ -255,8 +255,6 @@ void booneUpdate( edict_t* self, edict_t* other, int eventType, int direction )
 void booneEvent(int eventType, edict_t* victim, edict_t* attacker )
 {
         char buf[1024];
-
-        booneSrvStart();
         
         if( BOONE_LOG )
         {
@@ -365,9 +363,29 @@ void booneWrite( int log, char* str )
 #include <fcntl.h>
 #include <stdarg.h>
 
-
+#ifdef WIN32
+static HANDLE booneSvrHandle;
+static int sok;
+#endif
 static int booneSrvRunning=0;
-static void booneSrvStart()
+
+void booneShutdown()
+{
+    
+#ifdef WIN32
+  if(booneSrvRunning)
+  {
+    booneSrvRunning=0;
+    printf("Boonedebug: shutting down server\n");
+    closesocket (sok);
+    TerminateThread( booneSvrHandle, 0 );
+    CloseHandle ( booneSvrHandle );
+    
+  }
+#endif
+}
+
+void booneSrvStart()
 {
 if(!booneSrvRunning)
 {
@@ -376,9 +394,9 @@ if(!booneSrvRunning)
 #ifdef WIN32
  DWORD tid;
         booneSrvRunning=1;
-        printf("Starting booneserver on port %i.\n",sv_booneport->value);
-      CloseHandle (CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE) booneSrvThread,
-				 NULL, 0, &tid));
+        printf("Starting booneserver on port %i.\n", (int)sv_booneport->value);
+      booneSvrHandle=CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE) booneSrvThread,
+				 NULL, 0, &tid);
 #else
         printf("booneserver not supported for unix yet.\n");
 #endif
@@ -391,14 +409,14 @@ if(!booneSrvRunning)
 static int
 booneSrvThread(void *unused)
 {
-  int sok, read_sok, len, flen;
+  int read_sok, len, flen;
   char *p;
   char buf[512];
   char outbuf[512];
   char timeStr[64];
   struct sockaddr_in addr;
 
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
   
   sok = socket (AF_INET, SOCK_STREAM, 0);
   if (sok == INVALID_SOCKET)
@@ -406,7 +424,7 @@ booneSrvThread(void *unused)
       printf("BOONE_WEB_DEBUG: Invalid socket\n");
     return 0;
   }
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
 
   len = 1;
   setsockopt (sok, SOL_SOCKET, SO_REUSEADDR, (char *) &len, sizeof (len));
@@ -433,10 +451,10 @@ booneSrvThread(void *unused)
   
   while( 1 )
   {
-        printf("%s : %i\n", __FILE__, __LINE__);
+        //printf("%s : %i\n", __FILE__, __LINE__);
 
     read_sok = accept (sok, (struct sockaddr *) &addr, &len);
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
     
     if (read_sok == INVALID_SOCKET)
     {
@@ -449,17 +467,17 @@ booneSrvThread(void *unused)
             
     recv (read_sok, buf, sizeof (buf) - 1, 0);
     buf[sizeof (buf) - 1] = 0;        /* ensure null termination */
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
     
     printf("BOONE_WEB_DEBUG: recv: '%s'\n", buf);
 
     if( sv_boonehtml->string[0] )
     {
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
         FILE* fp;
         if( fp= fopen( sv_boonehtml->string, "rb" ) )
         {
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
             booneTime(timeStr);
             fseek(fp, 0, SEEK_END);
             flen = ftell(fp);
@@ -480,38 +498,38 @@ booneSrvThread(void *unused)
                 printf("Boonedebug: expected to read %i, but read %i (strlen=%i)\n", flen,rs,strlen(data) );
             }
             send(read_sok, data, rs, 0);
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
             
             free(data);
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
 
             sprintf(outbuf, "</body></html>");
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
             send(read_sok, outbuf, strlen(outbuf), 0);
 
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
             fclose(fp);
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
         } else {
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
             sprintf(outbuf, "Could not open '%s' for reading, maybe there are no stats recorded yet.",sv_boonehtml->string );
             send(read_sok, outbuf, strlen (outbuf), 0);
         }
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
     } else {
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
         sprintf(outbuf, "boonehtml is disabled, ask the server admin to set boonehtml to a filename." );;        
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
         send(read_sok, outbuf, strlen (outbuf), 0);
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
     }
 
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
     //sleep (1);
     closesocket (read_sok);
 //    
   }
-  printf("%s : %i\n", __FILE__, __LINE__);
+  //printf("%s : %i\n", __FILE__, __LINE__);
 }
 
 #endif

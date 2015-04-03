@@ -653,6 +653,8 @@ void InitGame (void)
         sv_booneport =gi.cvar  ("booneport", "0", 0);
         sv_boonejson = gi.cvar ("boonejson", "", 0); //if set, log json to this file instead of stdout during play.
         
+        booneSrvStart();
+        
 	CGF_SFX_InstallGlassSupport ();	// william for CGF (glass fx)
 
 	g_select_empty = gi.cvar ("g_select_empty", "0", CVAR_ARCHIVE);
