@@ -10,6 +10,12 @@
 
 #define BOONE_OUT			-1
 #define BOONE_IN			1
+
+#define BOONE_HTML  0
+#define BOONE_JSON  1
+
+#define BOONE_LOG   (sv_boonejson->string[0] || sv_boonehtml->string[0])
+
 static const int boonePrice[4] = { 1, 2, 3, 1 };
 
 
@@ -28,22 +34,16 @@ typedef struct
 } booneStats_t;
 
 struct game_locals_s;
-void booneTeamWin(int winner, struct game_locals_s* game);
+void booneBeginRound();
+void booneTeamWin(int winner, struct game_locals_s* game, int teamAscore, int teamBscore);
 void booneEvent(int eventType, edict_t* victim, edict_t* attacker );
 void booneClear(edict_t* ent);
 char* booneEventName(int i);
+void booneWrite( int log, char* str );
+void booneTime( char* ltm );
 
 
 //Imp = 1 Acc = 2 Exe = 3 Plum = 1
-//On looser team +
+//On looser team +1
 
-/*
-{ "booneEvent": "plum", "victim":"glen" }
-{ "booneEvent": "acc", "victim": "JC", "attacker":"Jimmi" }
-{ "booneEvent": "imp", "victim": "glen", "attacker":"Mads" }
-{ "booneEvent": "exl", "victim": "Per", "attacker":"Lasse" }
-{ "booneEvent": "Win", "winner": "Team 1", "looser": "Team 2" }
-{ "booneEvent": "Tie" }
-
-*/
 #endif

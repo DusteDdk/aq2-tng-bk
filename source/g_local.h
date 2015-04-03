@@ -975,6 +975,8 @@ extern cvar_t *sv_shellnum;	//How many shells at rest allowed in world?
 extern cvar_t *sv_shellstay;	//How long (ms) should a shell stay (if world has room for it)
 extern cvar_t *sv_impstreak;   //How large a streak to obtain impressive
 extern cvar_t *sv_excstreak;   //How large a streak to obtain excellent
+extern cvar_t *sv_boonehtml;   //if set, log to html file after each round.
+extern cvar_t *sv_boonejson;   //if set, log json to this file instead of stdout during play.
 
 #define world   (&g_edicts[0])
 

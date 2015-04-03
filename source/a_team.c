@@ -1478,6 +1478,8 @@ void ResetScores (qboolean playerScores)
 	if(!playerScores)
 		return;
 
+        booneBeginRound();
+        
 	for (i = 0; i < game.maxclients; i++)
 	{
 		ent = g_edicts + 1 + i;
@@ -2010,9 +2012,9 @@ int WonGame (int winner)
 				{
 					if( teams[TEAM1].score > teams[TEAM2].score )
 					{
-						booneTeamWin(TEAM1, &game);
+						booneTeamWin(TEAM1, &game, teams[TEAM1].score, teams[TEAM2].score );
 					} else if( teams[TEAM2].score > teams[TEAM1].score ) {
-						booneTeamWin(TEAM2, &game);
+						booneTeamWin(TEAM2, &game, teams[TEAM1].score, teams[TEAM2].score );
 					}
 				}
 
@@ -2031,9 +2033,9 @@ int WonGame (int winner)
 			{
 				if( teams[TEAM1].score > teams[TEAM2].score )
 				{
-					booneTeamWin(TEAM1, &game);
+					booneTeamWin(TEAM1, &game, teams[TEAM1].score, teams[TEAM2].score);
 				} else if( teams[TEAM2].score > teams[TEAM1].score ) {
-					booneTeamWin(TEAM2, &game);
+					booneTeamWin(TEAM2, &game, teams[TEAM1].score, teams[TEAM2].score);
 				}
 			}
 
@@ -2277,9 +2279,9 @@ void CheckTeamRules (void)
 
 					if( teams[TEAM1].score > teams[TEAM2].score )
 					{
-						booneTeamWin(TEAM1, &game);
+						booneTeamWin(TEAM1, &game, teams[TEAM1].score, teams[TEAM2].score);
 					} else if( teams[TEAM2].score > teams[TEAM1].score ) {
-						booneTeamWin(TEAM2, &game);
+						booneTeamWin(TEAM2, &game, teams[TEAM1].score, teams[TEAM2].score);
 					}
 					SendScores ();
 					teams[TEAM1].ready = teams[TEAM2].ready = teams[TEAM3].ready = 0;
@@ -2294,9 +2296,9 @@ void CheckTeamRules (void)
 
 				if( teams[TEAM1].score > teams[TEAM2].score )
 				{
-					booneTeamWin(TEAM1, &game);
+					booneTeamWin(TEAM1, &game, teams[TEAM1].score, teams[TEAM2].score);
 				} else if( teams[TEAM2].score > teams[TEAM1].score ) {
-					booneTeamWin(TEAM2, &game);
+					booneTeamWin(TEAM2, &game, teams[TEAM1].score, teams[TEAM2].score);
 				}
 
 				gi.bprintf (PRINT_HIGH, "Timelimit hit.\n");

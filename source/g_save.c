@@ -649,7 +649,9 @@ void InitGame (void)
 	sv_shellstay = gi.cvar ("shellstay", "8", 0);	//How many seconds should a shell stay (if world has room for it)
 	sv_impstreak = gi.cvar ("impstreak", "5", 0);   //How large a streak to obtain impressive
         sv_excstreak = gi.cvar ("excstreak", "12", 0);   //How large a streak to obtain excellent
-
+        sv_boonehtml = gi.cvar ("boonehtml", "", 0);  //if set, log to html file after each round.
+        sv_boonejson = gi.cvar ("boonejson", "", 0); //if set, log json to this file instead of stdout during play.
+        
 	CGF_SFX_InstallGlassSupport ();	// william for CGF (glass fx)
 
 	g_select_empty = gi.cvar ("g_select_empty", "0", CVAR_ARCHIVE);

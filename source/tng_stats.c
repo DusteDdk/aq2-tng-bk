@@ -296,6 +296,7 @@ void Cmd_Stats_f (edict_t *targetent, char *arg)
 void A_ScoreboardEndLevel (edict_t * ent, edict_t * killer)
 {
 	char string[1400], damage[50];
+        char booneBuf[1024];
 	edict_t *cl_ent;
 	int maxsize = 1000, i, j, k;
 
@@ -433,6 +434,7 @@ void A_ScoreboardEndLevel (edict_t * ent, edict_t * killer)
 
   gi.cprintf( ent,PRINT_HIGH, "======= BooneDump =======\n" );
 
+  
   for (i = 0; i < total; i++)
     {
       ping = game.clients[sorted[i]].ping;
@@ -462,9 +464,9 @@ void A_ScoreboardEndLevel (edict_t * ent, edict_t * killer)
 	       "xv 0 yv %d string \"%5d %-15s  %4d %5.1f  %4.1f %9i %9i\" ",
 	       56 + i * 8,
 	       sortedscores[i],
-	       game.clients[sorted[i]].pers.netname, shots, accuracy, fpm, game.clients[sorted[i]].resp.boone.stat[BOONE_GIVE], game.clients[sorted[i]].resp.boone.stat[BOONE_TAKE] );
+	       game.clients[sorted[i]].pers.netname, shots, accuracy, fpm,game.clients[sorted[i]].resp.boone.stat[BOONE_GIVE], game.clients[sorted[i]].resp.boone.stat[BOONE_TAKE] );
 
-    
+
         gi.cprintf( ent,PRINT_HIGH, "Player: %s booneGive: %2i  booneTake: %2i\n", game.clients[sorted[i]].pers.netname, game.clients[sorted[i]].resp.boone.stat[BOONE_GIVE], game.clients[sorted[i]].resp.boone.stat[BOONE_TAKE] );
     
       if (strlen (string) > (maxsize - 100) && i < (total - 2))
@@ -477,6 +479,8 @@ void A_ScoreboardEndLevel (edict_t * ent, edict_t * killer)
     }
   gi.cprintf( ent,PRINT_HIGH, "======= ========= =======\n" );
 
+
+  
 
 	if (strlen (string) > 1023)	// for debugging...
 	{
