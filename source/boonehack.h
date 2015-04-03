@@ -16,6 +16,7 @@
 
 #define BOONE_LOG   (sv_boonejson->string[0] || sv_boonehtml->string[0])
 
+#define BOONE_TEAM_TIE  32
 static const int boonePrice[4] = { 1, 2, 3, 1 };
 
 

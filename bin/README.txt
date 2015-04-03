@@ -16,7 +16,7 @@ impstreak (default "5")
 excstreak (default "12")
 
 //If set, logs end-of-round stats in html format to given file, can be served with a webserver like moongoose, apache or iis.
-boonehtml (default empty = not logging, example: set boonehtml "C:\www\boone.html")
+boonehtml (default empty = not logging. Example: set boonehtml "C:\www\boone.html")
 
 //If set, logs boone events to given file in json format (one json entry per line)
-boonejson (default empty, example: set boonejson "C:\aq2\boone.json")
+boonejson (default empty = not logging. Example: set boonejson "/home/dusted/boone.json")

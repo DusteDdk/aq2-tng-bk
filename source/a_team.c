@@ -1478,7 +1478,6 @@ void ResetScores (qboolean playerScores)
 	if(!playerScores)
 		return;
 
-        booneBeginRound();
         
 	for (i = 0; i < game.maxclients; i++)
 	{
@@ -1489,7 +1488,6 @@ void ResetScores (qboolean playerScores)
 		//Boone begin
 		booneClear(ent);
 		//Boone end
-
 		
 		ent->client->resp.score = 0;
 		ent->client->resp.kills = 0;
@@ -1962,7 +1960,6 @@ int WonGame (int winner)
 	{
 		gi.bprintf (PRINT_HIGH, "It was a tie, no points awarded!\n");
 		IRC_printf (IRC_T_GAME, "It was a tie, no points awarded!");
-
 		if(use_warnings->value)
 			gi.sound (&g_edicts[0], CHAN_VOICE | CHAN_NO_PHS_ADD,	gi.soundindex ("tng/no_team_wins.wav"), 1.0, ATTN_NONE, 0.0);
 		PrintScores ();
@@ -2009,17 +2006,6 @@ int WonGame (int winner)
 		{
 			if (matchtime >= timelimit->value * 60)
 			{
-				if( winner != WINNER_TIE && winner != WINNER_NONE )
-				{
-					if( teams[TEAM1].score > teams[TEAM2].score )
-					{
-						booneTeamWin(TEAM1, &game, teams[TEAM1].score, teams[TEAM2].score );
-					} else if( teams[TEAM2].score > teams[TEAM1].score ) {
-						booneTeamWin(TEAM2, &game, teams[TEAM1].score, teams[TEAM2].score );
-					}
-				}
-
-
 				SendScores ();
 				teams[TEAM1].ready = teams[TEAM2].ready = teams[TEAM3].ready = 0;
 				team_round_going = team_round_countdown = team_game_going = matchtime = 0;
@@ -2030,15 +2016,16 @@ int WonGame (int winner)
 		else if (level.time >= timelimit->value * 60)
 		{
 
-			if( winner != WINNER_TIE && winner != WINNER_NONE )
-			{
-				if( teams[TEAM1].score > teams[TEAM2].score )
-				{
-					booneTeamWin(TEAM1, &game, teams[TEAM1].score, teams[TEAM2].score);
-				} else if( teams[TEAM2].score > teams[TEAM1].score ) {
-					booneTeamWin(TEAM2, &game, teams[TEAM1].score, teams[TEAM2].score);
-				}
-			}
+
+                        if( teams[TEAM1].score > teams[TEAM2].score )
+                        {
+                            booneTeamWin(TEAM1, &game, teams[TEAM1].score, teams[TEAM2].score);
+                        } else if( teams[TEAM2].score > teams[TEAM1].score ) {
+                            booneTeamWin(TEAM2, &game, teams[TEAM1].score, teams[TEAM2].score);
+                        } else {
+                            booneTeamWin(BOONE_TEAM_TIE, &game, teams[TEAM1].score, teams[TEAM2].score);   
+                        }
+                        
 
 			gi.bprintf (PRINT_HIGH, "Timelimit hit.\n");
 			IRC_printf (IRC_T_GAME, "Timelimit hit.");
@@ -2283,7 +2270,9 @@ void CheckTeamRules (void)
 						booneTeamWin(TEAM1, &game, teams[TEAM1].score, teams[TEAM2].score);
 					} else if( teams[TEAM2].score > teams[TEAM1].score ) {
 						booneTeamWin(TEAM2, &game, teams[TEAM1].score, teams[TEAM2].score);
-					}
+					} else {
+                                                booneTeamWin(BOONE_TEAM_TIE, &game, teams[TEAM1].score, teams[TEAM2].score);
+                                        }
 					SendScores ();
 					teams[TEAM1].ready = teams[TEAM2].ready = teams[TEAM3].ready = 0;
 					team_round_going = team_round_countdown = team_game_going = matchtime = 0;
