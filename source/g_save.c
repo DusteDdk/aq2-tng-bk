@@ -650,6 +650,7 @@ void InitGame (void)
 	sv_impstreak = gi.cvar ("impstreak", "5", 0);   //How large a streak to obtain impressive
         sv_excstreak = gi.cvar ("excstreak", "12", 0);   //How large a streak to obtain excellent
         sv_boonehtml = gi.cvar ("boonehtml", "", 0);  //if set, log to html file after each round.
+        sv_booneport =gi.cvar  ("booneport", "0", 0);
         sv_boonejson = gi.cvar ("boonejson", "", 0); //if set, log json to this file instead of stdout during play.
         
 	CGF_SFX_InstallGlassSupport ();	// william for CGF (glass fx)

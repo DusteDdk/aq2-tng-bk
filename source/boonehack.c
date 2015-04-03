@@ -345,7 +345,6 @@ void booneWrite( int log, char* str )
 
 
 // The "webserver" - Listen to a port, on incoming connection, ignre request, stream all data from file and close connection.
-// TODO: Set header refresh time to 2 seconds after match end?
 
 #ifdef WIN32
 #include <io.h>
@@ -367,26 +366,23 @@ void booneWrite( int log, char* str )
 #include <stdarg.h>
 
 
-
-
-
-
 static int booneSrvRunning=0;
 static void booneSrvStart()
 {
 if(!booneSrvRunning)
 {
-    if( !booneSrvRunning )
+    if( sv_booneport->value && !booneSrvRunning )
     {
 #ifdef WIN32
  DWORD tid;
         booneSrvRunning=1;
-        printf("Starting booneserver on port 8080.\n");
+        printf("Starting booneserver on port %i.\n",sv_booneport->value);
       CloseHandle (CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE) booneSrvThread,
-				 NULL, 0, &tid));   
+				 NULL, 0, &tid));
 #else
         printf("booneserver not supported for unix yet.\n");
 #endif
+        
     }
 }
 }
@@ -402,19 +398,22 @@ booneSrvThread(void *unused)
   char timeStr[64];
   struct sockaddr_in addr;
 
+  printf("%s : %i\n", __FILE__, __LINE__);
+  
   sok = socket (AF_INET, SOCK_STREAM, 0);
   if (sok == INVALID_SOCKET)
   {
       printf("BOONE_WEB_DEBUG: Invalid socket\n");
     return 0;
   }
+  printf("%s : %i\n", __FILE__, __LINE__);
 
   len = 1;
   setsockopt (sok, SOL_SOCKET, SO_REUSEADDR, (char *) &len, sizeof (len));
 
   memset (&addr, 0, sizeof (addr));
   addr.sin_family = AF_INET;
-  addr.sin_port = htons (8080);
+  addr.sin_port = htons (sv_booneport->value);
 
   if (bind (sok, (struct sockaddr *) &addr, sizeof (addr)) == SOCKET_ERROR)
     {
@@ -434,7 +433,10 @@ booneSrvThread(void *unused)
   
   while( 1 )
   {
+        printf("%s : %i\n", __FILE__, __LINE__);
+
     read_sok = accept (sok, (struct sockaddr *) &addr, &len);
+  printf("%s : %i\n", __FILE__, __LINE__);
     
     if (read_sok == INVALID_SOCKET)
     {
@@ -447,14 +449,17 @@ booneSrvThread(void *unused)
             
     recv (read_sok, buf, sizeof (buf) - 1, 0);
     buf[sizeof (buf) - 1] = 0;        /* ensure null termination */
+  printf("%s : %i\n", __FILE__, __LINE__);
     
     printf("BOONE_WEB_DEBUG: recv: '%s'\n", buf);
 
     if( sv_boonehtml->string[0] )
     {
+  printf("%s : %i\n", __FILE__, __LINE__);
         FILE* fp;
         if( fp= fopen( sv_boonehtml->string, "rb" ) )
         {
+  printf("%s : %i\n", __FILE__, __LINE__);
             booneTime(timeStr);
             fseek(fp, 0, SEEK_END);
             flen = ftell(fp);
@@ -475,26 +480,38 @@ booneSrvThread(void *unused)
                 printf("Boonedebug: expected to read %i, but read %i (strlen=%i)\n", flen,rs,strlen(data) );
             }
             send(read_sok, data, rs, 0);
+  printf("%s : %i\n", __FILE__, __LINE__);
             
             free(data);
+  printf("%s : %i\n", __FILE__, __LINE__);
 
             sprintf(outbuf, "</body></html>");
+  printf("%s : %i\n", __FILE__, __LINE__);
             send(read_sok, outbuf, strlen(outbuf), 0);
 
+  printf("%s : %i\n", __FILE__, __LINE__);
             fclose(fp);
+  printf("%s : %i\n", __FILE__, __LINE__);
         } else {
+  printf("%s : %i\n", __FILE__, __LINE__);
             sprintf(outbuf, "Could not open '%s' for reading, maybe there are no stats recorded yet.",sv_boonehtml->string );
             send(read_sok, outbuf, strlen (outbuf), 0);
         }
+  printf("%s : %i\n", __FILE__, __LINE__);
     } else {
+  printf("%s : %i\n", __FILE__, __LINE__);
         sprintf(outbuf, "boonehtml is disabled, ask the server admin to set boonehtml to a filename." );;        
+  printf("%s : %i\n", __FILE__, __LINE__);
         send(read_sok, outbuf, strlen (outbuf), 0);
+  printf("%s : %i\n", __FILE__, __LINE__);
     }
 
+  printf("%s : %i\n", __FILE__, __LINE__);
     //sleep (1);
     closesocket (read_sok);
 //    
   }
+  printf("%s : %i\n", __FILE__, __LINE__);
 }
 
 #endif

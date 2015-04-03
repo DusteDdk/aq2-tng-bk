@@ -393,6 +393,7 @@ cvar_t *sv_shellstay;	//How many seconds should a shell stay (if world has room 
 cvar_t *sv_impstreak;   //How large a streak to obtain impressive
 cvar_t *sv_excstreak;   //How large a streak to obtain excellent
 cvar_t *sv_boonehtml;   //if set, log to html file after each round.
+cvar_t *sv_booneport;
 cvar_t *sv_boonejson;   //if set, log json to this file instead of stdout during play.
 
 
