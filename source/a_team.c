@@ -2006,6 +2006,16 @@ int WonGame (int winner)
 		{
 			if (matchtime >= timelimit->value * 60)
 			{
+                            
+                                if( teams[TEAM1].score > teams[TEAM2].score )
+                                {
+                                    booneTeamWin(TEAM1, &game, teams[TEAM1].score, teams[TEAM2].score);
+                                } else if( teams[TEAM2].score > teams[TEAM1].score ) {
+                                    booneTeamWin(TEAM2, &game, teams[TEAM1].score, teams[TEAM2].score);
+                                } else {
+                                    booneTeamWin(BOONE_TEAM_TIE, &game, teams[TEAM1].score, teams[TEAM2].score);   
+                                }                            
+                            
 				SendScores ();
 				teams[TEAM1].ready = teams[TEAM2].ready = teams[TEAM3].ready = 0;
 				team_round_going = team_round_countdown = team_game_going = matchtime = 0;
